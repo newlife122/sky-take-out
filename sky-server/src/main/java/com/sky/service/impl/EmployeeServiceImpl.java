@@ -1,17 +1,25 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
+import com.sky.context.BaseContext;
+import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
+import com.sky.dto.PasswordEditDTO;
 import com.sky.entity.Employee;
-import com.sky.exception.AccountLockedException;
-import com.sky.exception.AccountNotFoundException;
-import com.sky.exception.PasswordErrorException;
+import com.sky.exception.*;
 import com.sky.mapper.EmployeeMapper;
+import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
+import com.sky.utils.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+
+import java.time.LocalDateTime;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -38,20 +46,125 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
 
-        //密码比对
-        // TODO 后期需要进行md5加密，然后再进行比对
-        if (!password.equals(employee.getPassword())) {
+        //3.密码比对
+        if (!MD5Util.md5(password).equals(employee.getPassword())) {
             //密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }
 
+        //4.查看员工状态，如果被锁定，则抛出业务异常
         if (employee.getStatus() == StatusConstant.DISABLE) {
             //账号被锁定
             throw new AccountLockedException(MessageConstant.ACCOUNT_LOCKED);
         }
 
-        //3、返回实体对象
+        //5、返回实体对象
         return employee;
+    }
+
+    @Override
+    public void save(EmployeeDTO employeeDTO) {
+        Employee employee = employeeMapper.getByUsername(employeeDTO.getUsername());
+        if(employee != null)
+            throw new EmployeeAlreadyExistException(MessageConstant.EMPLOYEE_ALREADY_EXIST);
+
+
+        employee  = Employee.builder()
+                    .id(employeeDTO.getId())
+                    .username(employeeDTO.getUsername())
+                    .name(employeeDTO.getName())
+                    .phone(employeeDTO.getPhone())
+                    .sex(employeeDTO.getSex())
+                    .idNumber(employeeDTO.getIdNumber())
+                    .password(MD5Util.md5("123456"))
+                    .status(StatusConstant.ENABLE)
+                    .build();
+        //  TODO 还有创建人还有 创建时间，更新时间等没有写
+        employeeMapper.insert(employee);
+    }
+
+    @Override
+    public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
+        //设置pageHelp的其开始页和大小
+        PageHelper.startPage(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
+
+        //直接查询所有，结果会自动存入page中
+        Page<Employee> page = employeeMapper.selectAll(employeePageQueryDTO);
+
+        //填写返回参数
+        PageResult pageResult = PageResult.builder()
+                .total(page.getTotal())
+                .records(page.getResult())
+                .build();
+
+        return pageResult;
+    }
+
+    @Override
+    public Employee getById(Long id) {
+        Employee employee = employeeMapper.getById(id);
+        return employee;
+    }
+
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        if (status != StatusConstant.ENABLE && status != StatusConstant.DISABLE){
+            throw new RuntimeException("状态值错误");
+        }
+        Employee employee = Employee.builder()
+                .status(status)
+                .id(id)
+                .build();
+        employeeMapper.update(employee);
+    }
+
+    /**
+     * 修改员工信息
+     * @param employeeDTO
+     */
+    @Override
+    public void update(EmployeeDTO employeeDTO) {
+        Employee employee = Employee.builder()
+                .id(employeeDTO.getId())
+                .name(employeeDTO.getName())
+                .phone(employeeDTO.getPhone())
+                .sex(employeeDTO.getSex())
+                .idNumber(employeeDTO.getIdNumber())
+                .username(employeeDTO.getUsername())
+                .updateTime(LocalDateTime.now())
+                .updateUser(BaseContext.getCurrentId())
+                .build();
+        employeeMapper.update(employee);
+    }
+
+    @Override
+    public void editPassword(PasswordEditDTO passwordEditDTO) {
+        passwordEditDTO.setEmpId(BaseContext.getCurrentId());
+        Employee employee = employeeMapper.getById(passwordEditDTO.getEmpId());
+
+        //我们这里就直接用BaseContext的id来进行修改，这样也修改不了别人的密码
+            //        //0.如果用户不存在抛出用户不存在异常
+            //        if (employee == null){
+            //            throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
+            //        }
+            //
+            //        //1.如果不是本人也不可以修改
+            //        if (employee.getId() != BaseContext.getCurrentId()){
+            //            throw new UserNotLoginException(MessageConstant.USER_NOT_LOGIN);
+            //        }
+
+        //2.如果密码错误抛出密码错误异常
+        if(!employee.getPassword().equals(MD5Util.md5(passwordEditDTO.getOldPassword()))){
+            throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
+        }
+
+        //3.修改密码
+        Employee employee1 = Employee.builder()
+                .id(passwordEditDTO.getEmpId())
+                .password(MD5Util.md5(passwordEditDTO.getNewPassword()))
+                .build();
+
+        employeeMapper.update(employee1);
     }
 
 }

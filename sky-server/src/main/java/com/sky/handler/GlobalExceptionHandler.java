@@ -1,5 +1,6 @@
 package com.sky.handler;
 
+import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.BaseException;
 import com.sky.result.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +19,15 @@ public class GlobalExceptionHandler {
      * @param ex
      * @return
      */
-    @ExceptionHandler
+    @ExceptionHandler(BaseException.class)
     public Result exceptionHandler(BaseException ex){
+        log.error("异常信息：{}", ex.getMessage());
+        return Result.error(ex.getMessage());
+    }
+
+
+    @ExceptionHandler(AccountNotFoundException.class)
+    public Result exceptionHandler(AccountNotFoundException ex){
         log.error("异常信息：{}", ex.getMessage());
         return Result.error(ex.getMessage());
     }

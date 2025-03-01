@@ -31,13 +31,13 @@ public class JacksonObjectMapper extends ObjectMapper {
 
     public JacksonObjectMapper() {
         super();
-        //收到未知属性时不报异常
+        //收到未知属性时不报异常 解析 JSON 时，如果 JSON 里有 Java 对象 没有的字段，不会报错
         this.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         //反序列化时，属性不存在的兼容处理
         this.getDeserializationConfig().withoutFeatures(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-        SimpleModule simpleModule = new SimpleModule()
+        SimpleModule simpleModule = new SimpleModule()//序列化与反序列化的方式
                 .addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)))
                 .addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)))
                 .addDeserializer(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_TIME_FORMAT)))

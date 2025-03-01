@@ -35,11 +35,20 @@
         <jjwt>0.9.1</jjwt>
         <jaxb-api>2.3.1</jaxb-api>
         <poi>3.16</poi>
+        <minio.version>8.2.0</minio.version>
     </properties>
 
     <!--这里是模块管理，并不是真正加载    -->
     <dependencyManagement>
         <dependencies>
+            <!--对象存储，用于存储图像等非结构化数据-->
+            <!--官方文档：https://min.io/docs/minio/linux/developers/minio-drivers.html?ref=docs#java-sdk -->
+            <dependency>
+                <groupId>io.minio</groupId>
+                <artifactId>minio</artifactId>
+                <version>${minio.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter</artifactId>
