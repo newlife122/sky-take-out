@@ -12,3 +12,8 @@ sky:
     access-key-id: root
     access-key-secret: rlr12138
     bucket-name: sky-take-out
+  redis:
+    host: 192.168.125.131
+    port: 6379
+    password: 123321
+    database: 1

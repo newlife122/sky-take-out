@@ -79,7 +79,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                     .password(MD5Util.md5("123456"))
                     .status(StatusConstant.ENABLE)
                     .build();
-        //  TODO 还有创建人还有 创建时间，更新时间等没有写
         employeeMapper.insert(employee);
     }
 
