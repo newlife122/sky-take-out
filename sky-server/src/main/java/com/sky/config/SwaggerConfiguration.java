@@ -24,6 +24,10 @@ public class SwaggerConfiguration {
                 .description("苍穹外卖项目接口文档")
                 .build();
     }
+    /**
+     * 通过knife4j生成接口文档
+     * @return
+     */
     @Bean
     public Docket docketForAdmin() {
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
@@ -35,7 +39,10 @@ public class SwaggerConfiguration {
                 .build();
         return docket;
     }
-
+    /**
+     * 通过knife4j生成接口文档
+     * @return
+     */
     @Bean
     public Docket docketForUser(){
         Docket docket = new Docket(DocumentationType.SWAGGER_2)

@@ -36,6 +36,7 @@
         <jaxb-api>2.3.1</jaxb-api>
         <poi>3.16</poi>
         <minio.version>8.2.0</minio.version>
+        <http.version>4.5.14</http.version>
     </properties>
 
     <!--这里是模块管理，并不是真正加载    -->
@@ -47,6 +48,12 @@
                 <groupId>io.minio</groupId>
                 <artifactId>minio</artifactId>
                 <version>${minio.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${http.version}</version>
             </dependency>
 
             <dependency>

@@ -17,3 +17,7 @@ sky:
     port: 6379
     password: 123321
     database: 1
+  wechat:
+    appid: wx2b41639eb192a8d3
+    secret: 0801217f6878d903dd36f2fc539e9d1f
+    url-for-openid: https://api.weixin.qq.com/sns/jscode2session
