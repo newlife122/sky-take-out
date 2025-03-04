@@ -22,4 +22,6 @@ public interface CategoryService {
     void save(CategoryDTO categoryDTO);
 
     void deleteCategoryById(Long id);
+
+    List<Category> selectByConditions(Category category);
 }

@@ -7,6 +7,7 @@ import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.enumeration.OperationType;
+import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -21,7 +22,7 @@ public interface SetMealMapper {
 
     Page<SetmealVO> selectAll(SetmealPageQueryDTO setmealPageQueryDTO);
 
-    Page<SetmealVO> selectByCondition(SetmealPageQueryDTO setmealPageQueryDTO);
+    Page<SetmealVO> selectByCondition(Setmeal setmeal);
 
     SetmealVO selectById(Long id);
 
@@ -32,4 +33,10 @@ public interface SetMealMapper {
     void update(Setmeal setmeal);
 
     void deleteBatch(List<Long> ids);
+
+    List<Setmeal> selectByCotegoryId(Long categoryId);
+
+    List<DishItemVO> selectDishItemVOBySetMealId(Long id);
+
+    List<Setmeal> selectBySetmealConditions(Setmeal setmeal);
 }

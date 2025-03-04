@@ -98,6 +98,7 @@
             </if>
         </where>
     </select>
+
     <select id="selectById" resultType="com.sky.vo.SetmealVO">
         select setmeal.id,
         setmeal.category_id,
@@ -112,9 +113,42 @@
         left join category on setmeal.category_id = category.id
         where setmeal.id = #{id}
     </select>
+
     <select id="selectByName" resultType="com.sky.entity.Setmeal">
         select *
         from setmeal
         where name = #{name}
+    </select>
+
+    <select id="selectByCotegoryId" resultType="com.sky.entity.Setmeal">
+        select *
+        from setmeal
+        where category_id = #{categoryId}
+    </select>
+
+    <select id="selectDishItemVOBySetMealId" resultType="com.sky.vo.DishItemVO">
+        select dish.name,
+               setmeal_dish.copies,
+               dish.image,
+               dish.description
+        from setmeal
+        left join setmeal_dish on setmeal.id = setmeal_dish.setmeal_id
+        left join dish on setmeal_dish.dish_id = dish.id
+        where setmeal.id = #{id}
+    </select>
+    <select id="selectBySetmealConditions" resultType="com.sky.entity.Setmeal">
+        select *
+        from setmeal
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
     </select>
 </mapper>

@@ -90,4 +90,43 @@
         inner join setmeal on setmeal.id = setmeal_dish.setmeal_id
         where setmeal_dish.setmeal_id = #{id}
     </select>
+
+
+    <resultMap id="selectDishVoByCotegoryIdReslutMap" type="com.sky.vo.DishVO">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="price" column="price"/>
+        <result property="image" column="image"/>
+        <result property="description" column="description"/>
+        <result property="status" column="status"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="categoryName" column="categoryName"/>
+        <collection property="flavors" ofType="com.sky.entity.DishFlavor">
+            <id property="id" column="flavorId"/>
+            <result property="name" column="flavorName"/>
+            <result property="value" column="flavorValue"/>
+            <result property="dishId" column="dishId"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectEnableDishVoByCotegoryId" resultMap="selectDishVoByCotegoryIdReslutMap">
+        select dish.id,
+               dish.name,
+               dish.category_id,
+               dish.price,
+               dish.image,
+               dish.description,
+               dish.status,
+               dish.update_time,
+               category.name as categoryName,
+               dish_flavor.id as flavorId,
+               dish_flavor.name as flavorName,
+               dish_flavor.value as flavorValue,
+               dish.id as dishId
+        from dish
+                 left join category on dish.category_id = category.id
+                 left join dish_flavor on dish.id = dish_flavor.dish_id
+        where dish.category_id = #{categoryId} and dish.status = 1
+    </select>
 </mapper>

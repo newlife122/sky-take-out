@@ -39,4 +39,6 @@ public interface DishMapper {
     List<Dish> selectByCotegoryId(Long categoryId);
 
     List<Dish> selectBySetMealId(Long id);
+
+    List<DishVO> selectEnableDishVoByCotegoryId(Long categoryId);
 }

@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.*;
 /**
  * @author raoxin
  */
-@RestController
+@RestController("userShopController")
 @RequestMapping("/user/shop")
 @Slf4j
-@Api(tags = "店铺操作接口")
-public class UserShopController {
+@Api(tags = "C端-店铺操作接口")
+public class ShopController {
     public static final String SHOP_STATUS_KEY = "sky:shop:status";
     @Autowired
     RedisTemplate redisTemplate;

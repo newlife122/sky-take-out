@@ -194,4 +194,10 @@ public class DishServiceImpl implements DishService {
         return dishes;
     }
 
+    @Override
+    public List<DishVO> queryEnableDishVoByCotegoryId(Long categoryId) {
+        List<DishVO>  dishVOList = dishMapper.selectEnableDishVoByCotegoryId(categoryId);
+        return dishVOList;
+    }
+
 }

@@ -16,6 +16,7 @@ import com.sky.mapper.SetMealDishMapper;
 import com.sky.mapper.SetMealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.SetMealService;
+import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
@@ -30,7 +31,7 @@ import java.util.List;
  * @author raoxin
  */
 @Service
-public class SetMealServiceImpl implements SetMealService {
+ public class SetMealServiceImpl implements SetMealService {
     @Autowired
     private SetMealMapper setMealMapper;
 
@@ -70,7 +71,13 @@ public class SetMealServiceImpl implements SetMealService {
     @Override
     public PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {
         PageHelper.startPage(setmealPageQueryDTO.getPage(),setmealPageQueryDTO.getPageSize());
-        Page<SetmealVO> page = setMealMapper.selectByCondition(setmealPageQueryDTO);
+
+        Setmeal setmeal = Setmeal.builder()
+                .categoryId(setmealPageQueryDTO.getCategoryId())
+                .name(setmealPageQueryDTO.getName())
+                .status(setmealPageQueryDTO.getStatus())
+                .build();
+        Page<SetmealVO> page = setMealMapper.selectByCondition(setmeal);
         PageResult pageResult = PageResult.builder()
                 .total(page.getTotal())
                 .records(page.getResult())
@@ -150,6 +157,27 @@ public class SetMealServiceImpl implements SetMealService {
         //一次删除所有的套餐
         setMealMapper.deleteBatch(ids);
     }
+
+    @Override
+    public List<Setmeal> listByCategoryId(Long categoryId) {
+
+        List<Setmeal> setmealList = setMealMapper.selectByCotegoryId(categoryId);
+        return setmealList;
+    }
+
+
+    @Override
+    public List<DishItemVO> queryDishBySetMealId(Long id) {
+        List<DishItemVO>  dishItemVOList =  setMealMapper.selectDishItemVOBySetMealId(id);
+        return dishItemVOList;
+    }
+
+    @Override
+    public List<Setmeal> QueryBySetmealConditions(Setmeal setmeal) {
+        List<Setmeal> setmealList = setMealMapper.selectBySetmealConditions(setmeal);
+        return setmealList;
+    }
+
 
 
 }

@@ -27,4 +27,6 @@ public interface DishService {
 
 
     List<Dish> queryByCotegoryId(Long categoryId);
+
+    List<DishVO> queryEnableDishVoByCotegoryId(Long categoryId);
 }
