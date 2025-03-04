@@ -6,16 +6,10 @@ import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
-import com.sky.entity.Category;
-import com.sky.entity.Dish;
-import com.sky.entity.DishFlavor;
-import com.sky.entity.SetmealDish;
+import com.sky.entity.*;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.exception.SetmealEnableFailedException;
-import com.sky.mapper.CategoryMapper;
-import com.sky.mapper.DishFlavorMapper;
-import com.sky.mapper.DishMapper;
-import com.sky.mapper.SetMealDishMapper;
+import com.sky.mapper.*;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.DishService;
@@ -46,6 +40,9 @@ public class DishServiceImpl implements DishService {
 
     @Autowired
     SetMealDishMapper setMealDishMapper;
+
+    @Autowired
+    SetMealMapper setMealMapper;
 
     /**
      * 保存菜品
@@ -179,13 +176,29 @@ public class DishServiceImpl implements DishService {
         return dishVo;
     }
 
+    @Transactional
     @Override
     public void startOrStop(Integer status, Long id) {
+        //1.修改菜品状态
+        //2.如果是停售，那么查询套餐，如果有关联的套餐，将相关的套餐直接停售
         Dish dish = Dish.builder()
                 .status(status)
                 .id(id)
                 .build();
         dishMapper.update(dish);
+
+        if (status == StatusConstant.DISABLE){
+            List<Long> ids = setMealDishMapper.selectSetMealIdsByDishId(id);
+            if(ids != null && ids.size() != 0){
+                for (Long setMealId : ids) {
+                    Setmeal setmeal = Setmeal.builder()
+                            .status(StatusConstant.DISABLE)
+                            .id(setMealId)
+                            .build();
+                    setMealMapper.update(setmeal);
+                }
+            }
+        }
     }
 
     @Override

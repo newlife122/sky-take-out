@@ -11,6 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class DishController {
 
     @GetMapping("/list")
     @ApiOperation("根据分类id查询菜品")
+    @Cacheable(cacheNames = "sky:out:dishListByCID", key = "#categoryId")
     public Result<List<DishVO>> list(@RequestParam(required = true) Long categoryId){
         log.info("根据分类id查询菜品：{}", categoryId);
         List<DishVO> dishVOList = dishService.queryEnableDishVoByCotegoryId(categoryId);
