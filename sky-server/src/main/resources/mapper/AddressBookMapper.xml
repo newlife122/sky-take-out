@@ -64,6 +64,7 @@
         set is_default = 1
         where id = #{id}
     </update>
+
     <delete id="deleteById">
         delete from address_book
         where id = #{id}

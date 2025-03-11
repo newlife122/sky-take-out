@@ -2,16 +2,10 @@ package com.sky.mapper;
 
 
 import com.github.pagehelper.Page;
-import com.sky.annotation.AutoFIll;
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Orders;
-import com.sky.entity.Setmeal;
-import com.sky.enumeration.OperationType;
-import com.sky.vo.DishItemVO;
-import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderVO;
-import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.time.LocalDateTime;
@@ -45,4 +39,10 @@ public interface OrderMapper {
      * @return
      */
     List<Orders> selectAllOrdersByStatusAndTimeout(Integer status, LocalDateTime outOfTime);
+
+    Integer getCntByStatusAndPeriod(LocalDateTime begin, LocalDateTime end, Integer status);
+
+    Double getTurnOverByPeriod(LocalDateTime begin, LocalDateTime end);
+
+    List<GoodsSalesDTO> getTop10Order(LocalDateTime begin, LocalDateTime end);
 }

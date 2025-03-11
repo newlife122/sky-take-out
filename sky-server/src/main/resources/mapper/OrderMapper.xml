@@ -291,5 +291,48 @@
         where order_time &lt;=  #{outOfTime}
         and status = #{status}
     </select>
+    <select id="getCntByStatusAndPeriod" resultType="java.lang.Integer">
+        select count(*)
+        from orders
+        <where>
+            <if test="begin != null">
+                and order_time &gt;= #{begin}
+            </if>
+            <if test="end != null">
+                and order_time &lt;= #{end}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+    <select id="getTurnOverByPeriod" resultType="java.lang.Double">
+        select sum(amount)
+        from orders
+        where status = 5
+        <if test="begin != null">
+            and order_time &gt;= #{begin}
+        </if>
+        <if test="end != null">
+            and order_time &lt;= #{end}
+        </if>
+    </select>
+
+    <select id="getTop10Order" resultType="com.sky.dto.GoodsSalesDTO">
+        select od.name as name,
+               sum(od.number) as number
+        from orders as o
+        inner join order_detail as od on o.id = od.order_id
+        where o.status = 5
+        <if test="begin != null">
+            and o.order_time &gt;= #{begin}
+        </if>
+        <if test="end != null">
+            and o.order_time &lt;= #{end}
+        </if>
+        group by od.name
+        order by number desc
+        limit 10
+    </select>
 
 </mapper>

@@ -86,7 +86,7 @@ public class BaiDuLocationUtil {
 
     }
 
-    // TODO 想要开始的时候，或者变更地址的时候清除缓存
+    // TODO 变更地址的时候清除缓存
     @Cacheable(cacheNames = "location",key = "#root.methodName")
     public Location getLocalLocation() {
         Map<String,String> paramMap = new HashMap<>();
