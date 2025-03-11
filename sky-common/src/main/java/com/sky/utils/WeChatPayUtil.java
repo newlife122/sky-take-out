@@ -46,19 +46,21 @@ public class WeChatPayUtil {
 
     /**
      * 获取调用微信接口的客户端工具对象
-     *
+     * 设置这个http 接收发送请求和接收请求应该如何做
      * @return
      */
     private CloseableHttpClient getClient() {
         PrivateKey merchantPrivateKey = null;
         try {
-            //merchantPrivateKey商户API私钥，如何加载商户API私钥请看常见问题
+            //merchantPrivateKey商户API私钥，用来解密微信服务端 传输过来的数据
             merchantPrivateKey = PemUtil.loadPrivateKey(new FileInputStream(new File(weChatProperties.getPrivateKeyFilePath())));
-            //加载平台证书文件
+            //加载平台证书文件 证书里面有公钥，这个公钥是用来验签（实际上就是解密 然后对比hash）
             X509Certificate x509Certificate = PemUtil.loadCertificate(new FileInputStream(new File(weChatProperties.getWeChatPayCertFilePath())));
             //wechatPayCertificates微信支付平台证书列表。你也可以使用后面章节提到的“定时更新平台证书功能”，而不需要关心平台证书的来龙去脉
             List<X509Certificate> wechatPayCertificates = Arrays.asList(x509Certificate);
 
+            //merchantPrivateKey 解密微信传过来的数据
+            //证书里面有公钥，用来验证微信传输过来的数据里面的签名
             WechatPayHttpClientBuilder builder = WechatPayHttpClientBuilder.create()
                     .withMerchant(weChatProperties.getMchid(), weChatProperties.getMchSerialNo(), merchantPrivateKey)
                     .withWechatPay(wechatPayCertificates);
@@ -198,7 +200,7 @@ public class WeChatPayUtil {
             jo.put("nonceStr", nonceStr);
             jo.put("package", "prepay_id=" + prepayId);
             jo.put("signType", "RSA");
-            jo.put("paySign", packageSign);
+            jo.put("paySign", packageSign);//签名值
 
             return jo;
         }

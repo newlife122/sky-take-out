@@ -21,4 +21,6 @@ public interface UserMapper {
     User getUserByOpenId(String openId);
 
     void insert(User user);
+
+    User selectById(Long currentId);
 }

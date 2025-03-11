@@ -51,6 +51,18 @@ sky:
     appid: ${sky.wechat.appid}
     secret: ${sky.wechat.secret}
     url-for-openid: ${sky.wechat.url-for-openid}
+    mchid: ${sky.wechat.mchid}
+    mchSerialNo: ${sky.wechat.mchSerialNo}
+    privateKeyFilePath: ${sky.wechat.privateKeyFilePath}
+    apiV3Key: ${sky.wechat.apiV3Key}
+    weChatPayCertFilePath: ${sky.wechat.weChatPayCertFilePath}
+    notifyUrl: ${sky.wechat.notifyUrl}
+    refundNotifyUrl: ${sky.wechat.refundNotifyUrl}
+  baidu:
+    ak: ${sky.baidu.ak}
+    location: ${sky.baidu.location}
+    location-url: {sky.baidu.location-url}
+    route-url: {sky.baidu.route-url}
 
 
 

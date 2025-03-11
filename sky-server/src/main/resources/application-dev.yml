@@ -21,3 +21,31 @@ sky:
     appid: wx2b41639eb192a8d3
     secret: 0801217f6878d903dd36f2fc539e9d1f
     url-for-openid: https://api.weixin.qq.com/sns/jscode2session
+    mchid: 1561414331
+    # 商户号 (Mch ID)：用于唯一标识商户账号。由微信支付商户平台分配，商户所有的支付操作都需要用到此商户号。
+
+    mchSerialNo: 4B3B3DC35414AD50B1B755BAF8DE9CC7CF407606
+    # 商户证书序列号 (商户证书编号)：用于微信支付 API 的认证。在微信商户平台可以找到该证书的序列号。
+
+    privateKeyFilePath: classpath:static/apiclient_key.pem
+    # 商户私钥文件路径：该私钥用于对支付请求进行签名，保证请求的安全性。此路径应指向存放商户私钥的 PEM 格式文件。
+    # 使用 classpath 前缀表示该文件放在项目的 classpath 下，例如 `resources` 文件夹内。
+
+    apiV3Key: CZBK51236435wxpay435434323FFDuv3
+    # API V3 密钥：在微信商户平台中设置的 API V3 密钥，解密微信传输助手过来的数据，确保数据的安全传输。
+
+    weChatPayCertFilePath: classpath:static/wechatpay_166D96F876F45C7D07CE98952A96EC980368ACFC.pem
+    # 微信支付平台证书文件路径：用于微信支付的验证，保证接口通信的安全。此路径应指向微信支付平台证书文件。
+    # 使用 classpath 前缀表示该文件放在项目的 classpath 下，类似 `resources` 文件夹中。
+
+    notifyUrl: https://569f4b91.r39.cpolar.top/notify/paySuccess
+    # 支付结果通知回调 URL：微信支付完成后，微信支付平台会将支付结果通知商户服务器的 URL。
+
+    refundNotifyUrl: https://569f4b91.r39.cpolar.top/wxpay/pay.php
+    # 退款结果通知回调 URL：退款请求成功后，微信支付平台会将退款结果通知商户服务器的 URL。
+  baidu:
+    ak: y1P0YWEvuNExcoOKSJUb5nio2ZfDYeBQ
+    location: 北京市海淀区上地十街10号
+    location-url: https://api.map.baidu.com/geocoding/v3
+    route-url: https://api.map.baidu.com/direction/v2/riding
+

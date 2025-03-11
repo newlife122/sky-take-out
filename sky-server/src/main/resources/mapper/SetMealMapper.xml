@@ -99,7 +99,7 @@
         </where>
     </select>
 
-    <select id="selectById" resultType="com.sky.vo.SetmealVO">
+    <select id="selectById" resultType="com.sky.entity.Setmeal">
         select setmeal.id,
         setmeal.category_id,
         setmeal.name,

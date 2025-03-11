@@ -46,7 +46,7 @@
                 type = #{type}
             </if>
         </where>
-        order by sort
+        order by type,sort desc
     </select>
 
     <select id="pageQuery" resultType="com.sky.entity.Category">
@@ -62,11 +62,13 @@
             </where>
             order by sort, create_time asc
     </select>
+
     <select id="getById" resultType="com.sky.entity.Category">
         select *
         from category
         where id = #{id}
     </select>
+
     <select id="selectByConditions" resultType="com.sky.entity.Category">
         select *
         from category
@@ -81,5 +83,6 @@
                 and status = #{status}
             </if>
         </where>
+        order by type,sort desc
     </select>
 </mapper>

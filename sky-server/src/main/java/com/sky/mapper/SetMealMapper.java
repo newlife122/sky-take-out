@@ -24,7 +24,7 @@ public interface SetMealMapper {
 
     Page<SetmealVO> selectByCondition(Setmeal setmeal);
 
-    SetmealVO selectById(Long id);
+    Setmeal selectById(Long id);
 
 
     Setmeal selectByName(String name);

@@ -108,13 +108,14 @@ import java.util.List;
     @Override
     public SetmealVO getById(Long id) {
         //1.先根据id查询SetMeal
-        SetmealVO setmealVO = setMealMapper.selectById(id);
-        if (setmealVO == null){
+        Setmeal setmeal = setMealMapper.selectById(id);
+        if (setmeal == null){
             throw new RuntimeException("套餐不存在");
         }
-
+        SetmealVO setmealVO = new SetmealVO();
+        BeanUtils.copyProperties(setmeal,setmealVO);
         //2.然后再根据SetMeal的id查询SetMealDish
-        List<SetmealDish> setmealDishes = setMealDishMapper.selectByDishId(setmealVO.getId());
+        List<SetmealDish> setmealDishes = setMealDishMapper.selectByDishId(setmeal.getId());
         setmealVO.setSetmealDishes(setmealDishes);
         return setmealVO;
     }
