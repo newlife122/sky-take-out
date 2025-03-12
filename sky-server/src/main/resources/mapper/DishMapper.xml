@@ -129,4 +129,13 @@
                  left join dish_flavor on dish.id = dish_flavor.dish_id
         where dish.category_id = #{categoryId} and dish.status = 1
     </select>
+    <select id="selectDishCountByStatus" resultType="java.lang.Integer">
+        select count(*)
+        from dish
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
 </mapper>

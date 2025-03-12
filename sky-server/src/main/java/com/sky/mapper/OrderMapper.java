@@ -45,4 +45,6 @@ public interface OrderMapper {
     Double getTurnOverByPeriod(LocalDateTime begin, LocalDateTime end);
 
     List<GoodsSalesDTO> getTop10Order(LocalDateTime begin, LocalDateTime end);
+
+    Integer getOrderCountByStatus(Integer status);
 }

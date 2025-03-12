@@ -39,4 +39,6 @@ public interface SetMealMapper {
     List<DishItemVO> selectDishItemVOBySetMealId(Long id);
 
     List<Setmeal> selectBySetmealConditions(Setmeal setmeal);
+
+    Integer selectSetMealCountByStatus(Integer status);
 }

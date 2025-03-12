@@ -1,25 +1,32 @@
 package com.sky.service.impl;
 
+import com.sky.dto.ExcelDuring30DaysDTO;
 import com.sky.dto.GoodsSalesDTO;
 import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
-import com.sky.vo.OrderReportVO;
-import com.sky.vo.SalesTop10ReportVO;
-import com.sky.vo.TurnoverReportVO;
-import com.sky.vo.UserReportVO;
+import com.sky.service.WorkSpaceService;
+import com.sky.vo.*;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -31,6 +38,8 @@ public class ReportServiceImpl implements ReportService {
     private OrderMapper orderMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private WorkSpaceService workSpaceService;
 
 
     /**
@@ -162,8 +171,6 @@ public class ReportServiceImpl implements ReportService {
      */
     @Override
     public SalesTop10ReportVO getSalesTop10ReportVO(LocalDate begin, LocalDate end) {
-        // TODO 这里销量需要统计完成的订单
-        // TODO 修改传入参数为LocalDateTime
         // 这里直接找到order_detail 然后内连接，根据order的status = 完成的条件查询，然后limit查找前10
         LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
         LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
@@ -173,5 +180,69 @@ public class ReportServiceImpl implements ReportService {
                 .numberList(goodsSalesDTOList.stream().map(GoodsSalesDTO::getNumber).map(String::valueOf).collect(Collectors.joining(",")))
                 .build();
         return salesTop10ReportVO;
+    }
+
+    /**
+     * 近30天的运营数据导出
+     * @param response
+     */
+    @Transactional
+    @Override
+    public void exprotExcel(HttpServletResponse response) {
+        // 这个查询的数据在WorkSpaceService中有，所以通过这个也可以查询,先查询总的
+        // step
+        // 1. 查询出近30天的日期，创建一个链表
+        // 2. 根据每日日期遍历得到每天的数据存入excel中
+        // 3. 根据整体范围统计数据，存入excel中
+
+        LocalDate today = LocalDate.now();
+        LocalDate end =  today.minusDays(1L);
+        LocalDate thirtyDaysAgo = today.minusDays(30);
+        List<LocalDate> localDateList = new ArrayList<>();
+        while(!thirtyDaysAgo.isAfter(end)){
+            localDateList.add(thirtyDaysAgo);
+            thirtyDaysAgo = thirtyDaysAgo.plusDays(1L);
+        }
+
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("template/运营数据报表模板.xlsx");
+        Workbook workbook = null;
+        try {
+            workbook = new XSSFWorkbook(inputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        //查询整体数据
+        BusinessDataVO businessData = workSpaceService.getBusinessData(today.minusDays(30L),end);
+        Sheet sheet = workbook.getSheetAt(0);
+        //分别获得营业额单元格 订单完成率单元格 新增用户单元格 都在row4
+        //分别获得有效订单 平均客单价 都在row5
+        Row row4 = sheet.getRow(4-1);
+        Row row5 = sheet.getRow(5-1);
+        row4.getCell(2).setCellValue(businessData.getTurnover());
+        row4.getCell(4).setCellValue(businessData.getOrderCompletionRate());
+        row4.getCell(6).setCellValue(businessData.getNewUsers());
+        row5.getCell(2).setCellValue(businessData.getValidOrderCount());
+        row5.getCell(4).setCellValue(businessData.getUnitPrice());
+
+        for (int i = 0,startRow = 7; i < localDateList.size();i++,startRow++){
+            LocalDate tempBg = localDateList.get(i);
+            LocalDate tempEnd = tempBg;
+            BusinessDataVO businessData1 = workSpaceService.getBusinessData(tempBg, tempEnd);
+            Row row = sheet.getRow(startRow);
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            row.getCell(1).setCellValue(tempBg.format(dateTimeFormatter));
+            row.getCell(2).setCellValue(businessData1.getTurnover());
+            row.getCell(3).setCellValue(businessData1.getValidOrderCount());
+            row.getCell(4).setCellValue(businessData1.getOrderCompletionRate());
+            row.getCell(5).setCellValue(businessData1.getUnitPrice());
+            row.getCell(6).setCellValue(businessData1.getNewUsers());
+        }
+
+        try {
+            ServletOutputStream outputStream = response.getOutputStream();
+            workbook.write(outputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

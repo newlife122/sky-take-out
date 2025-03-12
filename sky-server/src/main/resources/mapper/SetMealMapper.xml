@@ -151,4 +151,13 @@
             </if>
         </where>
     </select>
+    <select id="selectSetMealCountByStatus" resultType="java.lang.Integer">
+        select count(*)
+        from setmeal
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
 </mapper>

@@ -41,4 +41,6 @@ public interface DishMapper {
     List<Dish> selectBySetMealId(Long id);
 
     List<DishVO> selectEnableDishVoByCotegoryId(Long categoryId);
+
+    Integer selectDishCountByStatus(Integer status);
 }
